@@ -36,8 +36,8 @@ Digite a senha do root quando solicitado.
 - Crie um usuário para a aplicação (substitua `usuario_app` e `senhaSegura123` pelos seus valores):
 
   ```sql
-  CREATE USER 'usuario_app'@'localhost' IDENTIFIED BY 'senhaSegura123';
-  GRANT ALL PRIVILEGES ON vendasdb.* TO 'usuario_app'@'localhost';
+  CREATE USER '<SEU_USUARIO_AQUI>'@'localhost' IDENTIFIED BY '<SUA_SENHA_AQUI>';
+  GRANT ALL PRIVILEGES ON vendasdb.* TO '<SEU_USUARIO_AQUI>'@'localhost';
   FLUSH PRIVILEGES;
   ```
 
