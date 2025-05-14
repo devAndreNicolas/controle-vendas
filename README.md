@@ -120,9 +120,9 @@ Digite a senha do root quando solicitado.
 
   public class MySQLConnectionTest {
 
-      private static final String URL = "jdbc:mysql://localhost:3306/vendasdb?useSSL=false&serverTimezone=UTC";
-      private static final String USER = "usuario_app"; // seu usuário criado no MySQL
-      private static final String PASSWORD = "senhaSegura123"; // sua senha
+      private static final String URL = System.getenv("DB_URL");
+      private static final String USER = System.getenv("DB_USER");
+      private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
       @Test
       public void testConnection() {
