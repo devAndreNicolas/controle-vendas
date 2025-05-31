@@ -2,6 +2,7 @@ package org.example.controle_vendas.model;
 
 public class Produto {
     private int produtoId;
+    private int categoriaId;
     private String nomeProduto;
     private int precoVenda;
     private int precoCusto;
@@ -16,10 +17,19 @@ public class Produto {
         this.precoVenda = precoVenda;
         this.precoCusto = precoCusto;
         this.unidadeMedida = unidadeMedida;
+        this.categoriaId = categoriaId;
     }
 
-    public int getProdutoID() {return produtoId;}
-    public void setProdutoID(int produtoId) {this.produtoId = produtoId;}
+    public int getProdutoId() {return produtoId;}
+    public void setProdutoId(int produtoId) {this.produtoId = produtoId;}
+
+    public int getCategoriaId() {
+        return categoriaId;
+    }
+
+    public void setCategoriaId(int categoriaId) {
+        this.categoriaId = categoriaId;
+    }
 
     public String getNomeProduto() {return nomeProduto;}
     public void setNomeProduto(String nomeProduto) {this.nomeProduto = nomeProduto;}

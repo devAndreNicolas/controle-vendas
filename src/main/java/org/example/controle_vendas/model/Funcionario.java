@@ -14,8 +14,8 @@ public class Funcionario {
         this.cpf = cpf;
     }
 
-    public int getFuncionarioID() {return funcionarioId;}
-    public void setFuncionarioID(int funcionarioId) {this.funcionarioId = funcionarioId;}
+    public int getFuncionarioId() {return funcionarioId;}
+    public void setFuncionarioId(int funcionarioId) {this.funcionarioId = funcionarioId;}
 
     public String getNome() { return nome;}
     public void setNome(String nome) { this.nome = nome;}

@@ -10,30 +10,60 @@ public class ItemVenda {
 
     public ItemVenda() {}
 
-    public ItemVenda(int itemVendaId, int vendaId, int produtoId, int quantidadeVendida, double precoUnitarioVendido, double subtotalItem) {
+    public ItemVenda(int itemVendaId, int vendaId, int produtoId, int quantidadeVendida, double precoUnitarioVendido) {
         this.itemVendaId = itemVendaId;
         this.vendaId = vendaId;
         this.produtoId = produtoId;
         this.quantidadeVendida = quantidadeVendida;
         this.precoUnitarioVendido = precoUnitarioVendido;
-        this.subtotalItem = subtotalItem;
+        this.subtotalItem = quantidadeVendida * precoUnitarioVendido;
     }
 
-    public int getItemVendaId() { return itemVendaId; }
-    public void setItemVendaId(int itemVendaId) { this.itemVendaId = itemVendaId; }
+    public int getItemVendaId() {
+        return itemVendaId;
+    }
 
-    public int getVendaId() { return vendaId; }
-    public void setVendaId(int vendaId) { this.vendaId = vendaId; }
+    public void setItemVendaId(int itemVendaId) {
+        this.itemVendaId = itemVendaId;
+    }
 
-    public int getProdutoId() { return produtoId; }
-    public void setProdutoId(int produtoId) { this.produtoId = produtoId; }
+    public int getVendaId() {
+        return vendaId;
+    }
 
-    public int getQuantidadeVendida() { return quantidadeVendida; }
-    public void setQuantidadeVendida(int quantidadeVendida) { this.quantidadeVendida = quantidadeVendida; }
+    public void setVendaId(int vendaId) {
+        this.vendaId = vendaId;
+    }
 
-    public double getPrecoUnitarioVendido() { return precoUnitarioVendido; }
-    public void setPrecoUnitarioVendido(double precoUnitarioVendido) { this.precoUnitarioVendido = precoUnitarioVendido; }
+    public int getProdutoId() {
+        return produtoId;
+    }
 
-    public double getSubtotalItem() { return subtotalItem; }
-    public void setSubtotalItem(double subtotalItem) { this.subtotalItem = subtotalItem; }
+    public void setProdutoId(int produtoId) {
+        this.produtoId = produtoId;
+    }
+
+    public int getQuantidadeVendida() {
+        return quantidadeVendida;
+    }
+
+    public void setQuantidadeVendida(int quantidadeVendida) {
+        this.quantidadeVendida = quantidadeVendida;
+        calcularSubtotal();
+    }
+    public double getPrecoUnitarioVendido() {
+        return precoUnitarioVendido;
+    }
+
+    public void setPrecoUnitarioVendido(double precoUnitarioVendido) {
+        this.precoUnitarioVendido = precoUnitarioVendido;
+        calcularSubtotal();
+    }
+
+    public double getSubtotalItem() {
+        return subtotalItem;
+    }
+    private void calcularSubtotal() {
+        this.subtotalItem = this.quantidadeVendida * this.precoUnitarioVendido;
+    }
 }

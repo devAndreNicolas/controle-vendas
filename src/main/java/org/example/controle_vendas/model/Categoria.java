@@ -13,11 +13,11 @@ public class Categoria {
         this.descricao = descricao;
     }
 
-    public int getCategoriaID() {
+    public int getCategoriaId() {
         return categoriaId;
     }
 
-    public void setCategoriaID(int categoriaId) {
+    public void setCategoriaId(int categoriaId) {
         this.categoriaId = categoriaId;
     }
 
