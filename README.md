@@ -11,7 +11,7 @@ Este sistema é uma aplicação desktop desenvolvida em **Java**, utilizando **S
 - Vendas, Itens de Venda, Pagamentos e Notas Fiscais
 - Formas de Pagamento
 
-Utiliza **"soft delete"** (inativação lógica) para preservar o histórico dos dados.
+Os dados não são apagados, apenas marcados como inativos **"soft delete"**, para manter o histórico.
 
 ---
 
