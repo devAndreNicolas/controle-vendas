@@ -1,169 +1,148 @@
-# Projeto Vendas - Configuração Completa com MySQL e JUnit
+# Sistema de Controle de Vendas
 
-Este README guia você passo a passo para configurar o ambiente MySQL, criar o banco de dados com as tabelas da modelagem, criar um usuário para a aplicação, configurar um projeto Java Maven com JUnit e testar a conexão com o banco.
+## 1. Visão Geral do Sistema
+
+Este sistema é uma aplicação desktop desenvolvida em **Java**, utilizando **Swing** para a interface gráfica (GUI) e **MySQL** para persistência dos dados. Ele visa oferecer uma solução para o gerenciamento de:
+
+- Clientes (Pessoa Física ou Jurídica)
+- Produtos e Categorias
+- Funcionários
+- Estoque
+- Vendas, Itens de Venda, Pagamentos e Notas Fiscais
+- Formas de Pagamento
+
+Utiliza **"soft delete"** (inativação lógica) para preservar o histórico dos dados.
 
 ---
 
-## 1. Instalar o MySQL no seu Computador
+## 2. Funcionalidades
 
-- Baixe e instale o MySQL Server a partir do site oficial:
-  [https://dev.mysql.com/downloads/mysql/](https://dev.mysql.com/downloads/mysql/)
-
-- Durante a instalação, defina uma senha para o usuário `root` e guarde essa senha com segurança.
-
-- Opcionalmente, instale o **MySQL Workbench** para facilitar a administração gráfica do banco.
+- **Gestão de Categorias:** CRUD completo com inativação lógica.
+- **Gestão de Produtos:** CRUD com validações (nome, preço, associação a categorias/unidades).
+- **Gestão de Clientes:** Suporte a PF/PJ, validação de CPF/CNPJ.
+- **Gestão de Funcionários:** Cadastro, edição e inativação com validação de CPF.
+- **Gestão de Estoque:** Controle de quantidade atual e mínima.
+- **Gestão de Formas de Pagamento:** Cadastro e manutenção.
+- **Gestão de Vendas:** Registro de vendas completas, com clientes, itens, pagamentos e nota fiscal.
+- **Interface Moderna (Swing):**
+  - Layouts com `GridBagLayout`
+  - Campos formatados com `JFormattedTextField`
+  - Textos guia (placeholders) e botões interativos
 
 ---
 
-## 2. Configurar o MySQL
-    
-- Abra o terminal ou prompt de comando.
+## 3. Arquitetura do Sistema
 
-- Acesse o MySQL como root:
+O projeto segue uma **arquitetura em camadas (layered architecture)**:
 
-  ```bash
-  mysql -u root -p
+org.example.controle_vendas
+│
+├── dao # Camada de persistência (JDBC)
+├── model # Entidades de negócio
+├── service # Lógica de negócio e validação
+└── ui # Interface gráfica (Swing)
 
 
-Digite a senha do root quando solicitado.
+---
 
-- Crie o banco de dados `vendasdb`:
+## 4. Estrutura de Pacotes
 
-  ```sql
-  CREATE DATABASE vendasdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-  ```
+| Pacote      | Conteúdo                                                   |
+|-------------|------------------------------------------------------------|
+| `dao`       | Acesso a dados via JDBC: `CategoriaDAO`, `ClienteDAO`...  |
+| `model`     | Entidades como `Cliente`, `Produto`, `Venda`, etc.        |
+| `service`   | Validações e lógica: `ProdutoService`, `VendaService`...  |
+| `ui`        | Telas Swing: `TelaPrincipalUI`, `VendaUI`, etc.           |
 
-- Crie um usuário para a aplicação (substitua `usuario_app` e `senhaSegura123` pelos seus valores):
+---
 
-  ```sql
-  CREATE USER '<SEU_USUARIO_AQUI>'@'localhost' IDENTIFIED BY '<SUA_SENHA_AQUI>';
-  GRANT ALL PRIVILEGES ON vendasdb.* TO '<SEU_USUARIO_AQUI>'@'localhost';
-  FLUSH PRIVILEGES;
-  ```
+## 5. Componentes Principais
 
-- Saia do MySQL:
+| Componente       | Camada  | Função |
+|------------------|---------|--------|
+| Categoria         | Model   | Define categorias de produtos. |
+| UnidadeMedida     | Model   | Unidade, Litro, Kg, etc. |
+| Produto           | Model   | Descrição, preços, categoria, unidade. |
+| Estoque           | Model   | Quantidade atual/mínima por produto. |
+| Cliente           | Model   | Dados pessoais/jurídicos. |
+| Funcionario       | Model   | Nome, CPF, dados internos. |
+| FormaPagamento    | Model   | Tipos de pagamento. |
+| Venda             | Model   | Transação completa com itens, pagamentos, cliente. |
+| ItemVenda         | Model   | Produto dentro de uma venda. |
+| NotaFiscal        | Model   | Dados fiscais relacionados à venda. |
+| Pagamento         | Model   | Registro de valor pago por forma de pagamento. |
 
-  ```sql
-  EXIT;
-  ```
+---
 
------
+## 6. Termos Técnicos Importantes
 
-## 3\. Criar as Tabelas no Banco de Dados
+- **DAO (Data Access Object):** Encapsula operações com banco de dados.
+- **JDBC:** Interface Java para SQL.
+- **Soft Delete:** Exclusão lógica via status/ativo.
+- **UI/UX:** Interface do usuário e experiência do usuário.
+- **JFormattedTextField:** Campo formatado (valores monetários, etc).
+- **Placeholder:** Texto guia exibido em campos vazios.
+- **CRUD:** Create, Read, Update, Delete.
 
-- Acesse o MySQL com seu usuário criado, ou continue como root:
+---
 
-  ```bash
-  mysql -u root -p vendasdb
-  ```
+## 7. Requisitos e Dependências
 
-- Execute o script abaixo para criar as tabelas:
+### 7.1 Requisitos de Software
 
-  ```sql
-  USE vendasdb;
+- Java JDK 21+
+- MySQL 8.0+
+- IDE: IntelliJ IDEA, Eclipse ou similar
 
-  CREATE TABLE Cliente (
-      cliente_id INT AUTO_INCREMENT PRIMARY KEY,
-      nome VARCHAR(255) NOT NULL,
-      cpf_cnpj VARCHAR(20) UNIQUE NOT NULL,
-      email VARCHAR(255),
-      telefone VARCHAR(20),
-      endereco TEXT
-  ); etc...
-  ```
+### 7.2 Dependências via Maven
 
-  Execute este script no MySQL Workbench ou terminal para criar todas as tabelas.
+```xml
+<!-- MySQL Driver -->
+<dependency>
+  <groupId>mysql</groupId>
+  <artifactId>mysql-connector-java</artifactId>
+  <version>8.0.33</version>
+</dependency>
 
------
+<!-- FlatLaf para UI moderna -->
+<dependency>
+  <groupId>com.formdev</groupId>
+  <artifactId>flatlaf</artifactId>
+  <version>3.4</version>
+</dependency>
 
-## 4\. Criar o Projeto Maven Java
+<!-- Java Dotenv para variáveis de ambiente -->
+<dependency>
+  <groupId>io.github.cdimascio</groupId>
+  <artifactId>java-dotenv</artifactId>
+  <version>5.2.2</version>
+</dependency>
 
-- Abra sua IDE (ex: IntelliJ IDEA) e crie um novo projeto Maven.
+<!-- JUnit para testes (escopo test) -->
+<dependency>
+  <groupId>org.junit.jupiter</groupId>
+  <artifactId>junit-jupiter</artifactId>
+  <version>5.13.0-M2</version>
+  <scope>test</scope>
+</dependency>
 
-- No arquivo `pom.xml`, adicione as dependências necessárias:
-
-  ```xml
-  <dependencies>
-      <dependency>
-          <groupId>org.junit.jupiter</groupId>
-          <artifactId>junit-jupiter</artifactId>
-          <version>5.9.3</version>
-          <scope>test</scope>
-      </dependency>
-
-      <dependency>
-          <groupId>mysql</groupId>
-          <artifactId>mysql-connector-java</artifactId>
-          <version>8.0.33</version>
-      </dependency>
-  </dependencies>
-  ```
-
-- Atualize o Maven para baixar as dependências.
-
------
-
-## 5\. Criar Teste JUnit para Validar Conexão com o Banco
-
-- Crie o arquivo `MySQLConnectionTest.java` em `src/test/java/com/suaempresa/vendas/` com o código:
-
-  ```java
-  package com.suaempresa.vendas;
-
-  import org.junit.jupiter.api.Test;
-
-  import java.sql.Connection;
-  import java.sql.DriverManager;
-  import java.sql.SQLException;
-
-  import static org.junit.jupiter.api.Assertions.*;
-
-  public class MySQLConnectionTest {
-
-      private static final String URL = System.getenv("DB_URL");
-      private static final String USER = System.getenv("DB_USER");
-      private static final String PASSWORD = System.getenv("DB_PASSWORD");
-
-      @Test
-      public void testConnection() {
-          try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
-              assertNotNull(conn, "A conexão deve ser criada com sucesso");
-              System.out.println("Conexão com MySQL estabelecida com sucesso!");
-          } catch (SQLException e) {
-              fail("Falha ao conectar com o banco: " + e.getMessage());
-          }
-      }
-  }
-  ```
-
-- Altere `usuario_app` e `senhaSegura123` para os valores que você criou no banco.
-
------
-
-## 6\. Rodar o Teste
-
-- Na sua IDE, clique com o botão direito no arquivo `MySQLConnectionTest.java` e execute o teste.
-
-- Ou no terminal, dentro do diretório do projeto, execute:
-
-  ```bash
-  mvn test
-  ```
-
-- Se o teste passar, você está conectado corretamente ao banco\!
-
------
-
-## Extras
-
-* Para inserir dados de teste, crie scripts SQL INSERT ou faça testes Java que façam inserções via JDBC.
-* Use o MySQL Workbench para visualizar e gerenciar seu banco de forma gráfica.
-* Lembre-se de manter suas senhas seguras e não expô-las em códigos públicos.
-
------
-
-## Fluxo Resumido
-
-```plaintext
-[Instalar MySQL] -> [Criar Banco e Usuário] -> [Criar Tabelas com Script] -> [Criar Projeto Maven] -> [Configurar Dependências] -> [Criar Teste de Conexão] -> [Rodar Teste]
+<!-- Kotlin Stdlib -->
+<dependency>
+  <groupId>org.jetbrains.kotlin</groupId>
+  <artifactId>kotlin-stdlib</artifactId>
+  <version>1.9.0</version>
+</dependency>
 ```
+
+| Tabela           | Descrição                    | PK / FK                                                       | Soft Delete |
+| ---------------- | ---------------------------- | ------------------------------------------------------------- | ----------- |
+| categoria        | Categorias de produtos       | categoria\_id (PK)                                            | `ativo`     |
+| cliente          | Dados do cliente (PF/PJ)     | cliente\_id (PK)                                              | `ativo`     |
+| funcionario      | Dados dos funcionários       | funcionario\_id (PK)                                          | `ativo`     |
+| produto          | Produtos registrados         | produto\_id (PK), categoria\_id (FK)                          | `ativo`     |
+| estoque          | Estoque por produto          | estoque\_id (PK), produto\_id (FK)                            | N/A         |
+| forma\_pagamento | Métodos de pagamento aceitos | forma\_pagamento\_id (PK)                                     | `ativo`     |
+| venda            | Registro de vendas           | venda\_id (PK), cliente\_id (FK), funcionario\_id (FK)        | `status`    |
+| item\_venda      | Produtos vinculados à venda  | item\_venda\_id (PK), venda\_id (FK), produto\_id (FK)        | N/A         |
+| nota\_fiscal     | Nota fiscal da venda         | nota\_fiscal\_id (PK), venda\_id (FK)                         | N/A         |
+| pagamento        | Valores pagos em cada venda  | pagamento\_id (PK), venda\_id (FK), forma\_pagamento\_id (FK) | `status`    |

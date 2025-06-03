@@ -23,4 +23,31 @@ public class CategoriaService {
     public List<Categoria> listarCategorias() throws SQLException {
         return categoriaDAO.listarTodos();
     }
+
+    public void atualizarCategoria(Categoria categoria) throws SQLException {
+        if (categoria.getCategoriaId() <= 0) {
+            throw new IllegalArgumentException("ID da categoria inválido para atualização.");
+        }
+        if (categoria.getNome() == null || categoria.getNome().isBlank()) {
+            throw new IllegalArgumentException("Nome da categoria é obrigatório para atualização.");
+        }
+        categoriaDAO.atualizar(categoria);
+    }
+
+    public Categoria buscarPorId(int id) throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID da categoria inválido para busca.");
+        }
+        return categoriaDAO.buscarPorId(id);
+    }
+
+    // MÉTODO ALTERADO: Agora chama 'inativar' no DAO
+    public void inativarCategoria(int id) throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID da categoria inválido para inativação.");
+        }
+        // Você pode adicionar uma validação para verificar se a categoria pode ser inativada
+        // Ex: verificar se há produtos ou vendas ativas vinculadas, se desejar.
+        categoriaDAO.inativar(id);
+    }
 }

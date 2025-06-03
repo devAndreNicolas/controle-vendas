@@ -8,8 +8,12 @@ import org.example.controle_vendas.service.CategoriaService;
 import org.example.controle_vendas.service.ClienteService;
 import org.example.controle_vendas.service.FuncionarioService;
 import org.example.controle_vendas.service.ProdutoService;
+import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,12 +24,26 @@ public class TelaPrincipalUI extends JFrame {
     private Connection connection;
 
     public TelaPrincipalUI() {
+        super("Sistema Controle de Vendas"); // Título da janela
         try {
-            // Ajuste conforme seu usuário, senha e banco
-            connection = DriverManager.getConnection(System.getenv("DB_URL"), System.getenv("DB_USER"), System.getenv("DB_PASSWORD"));
+            String dbUrl = System.getenv("DB_URL");
+            String dbUser = System.getenv("DB_USER");
+            String dbPassword = System.getenv("DB_PASSWORD");
+
+            if (dbUrl == null || dbUser == null || dbPassword == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Variáveis de ambiente DB_URL, DB_USER, DB_PASSWORD não configuradas.",
+                        "Erro de Configuração", JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+            }
+
+            connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            System.out.println("Conexão com o banco de dados estabelecida com sucesso.");
+
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Erro ao conectar ao banco: " + e.getMessage(),
                     "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
             System.exit(1);
         }
 
@@ -33,52 +51,99 @@ public class TelaPrincipalUI extends JFrame {
     }
 
     private void initComponents() {
-        setTitle("Sistema Controle de Vendas - Tela Principal");
-        setSize(400, 350);
+        setSize(450, 450); // Aumentar um pouco o tamanho
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JPanel painel = new JPanel(new GridLayout(5, 1, 10, 10));
-        painel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        // Painel principal usando BorderLayout
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20)); // Padding externo
 
-        JButton btnClientes = new JButton("Gerenciar Clientes");
+        // Título centralizado no topo
+        JLabel titleLabel = new JLabel("Controle de Vendas", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28)); // Fonte maior e em negrito
+        titleLabel.setBorder(new EmptyBorder(10, 0, 30, 0)); // Espaçamento abaixo do título
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
+
+        // Painel para os botões usando GridBagLayout para flexibilidade
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10); // Espaçamento entre os botões
+        gbc.fill = GridBagConstraints.HORIZONTAL; // Faz os botões preencherem horizontalmente
+        gbc.weightx = 1.0; // Distribui o espaço horizontal uniformemente
+
+        // Criar e adicionar os botões
+        // Sugestão: Use ImageIcon para adicionar ícones aos botões (ex: new ImageIcon("path/to/icon.png"))
+        // Você precisaria ter os arquivos de imagem (.png) em um diretório acessível.
+
+        // Botão Clientes
+        JButton btnClientes = new JButton("Clientes"); // Texto mais conciso
+        // btnClientes.setIcon(new ImageIcon("path/to/customer_icon.png")); // Exemplo de ícone
+        btnClientes.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" ); // Estilo FlatLaf (opcional)
+        btnClientes.setFont(new Font("Segoe UI", Font.PLAIN, 16)); // Fonte maior para botões
         btnClientes.addActionListener(e -> abrirClienteUI());
-        painel.add(btnClientes);
+        gbc.gridy = 0; // Primeira linha
+        buttonPanel.add(btnClientes, gbc);
 
-        JButton btnProdutos = new JButton("Gerenciar Produtos");
+        // Botão Produtos
+        JButton btnProdutos = new JButton("Produtos");
+        // btnProdutos.setIcon(new ImageIcon("path/to/product_icon.png"));
+        btnProdutos.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" );
+        btnProdutos.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         btnProdutos.addActionListener(e -> abrirProdutoUI());
-        painel.add(btnProdutos);
+        gbc.gridy = 1; // Segunda linha
+        buttonPanel.add(btnProdutos, gbc);
 
-        JButton btnCategorias = new JButton("Gerenciar Categorias");
+        // Botão Categorias
+        JButton btnCategorias = new JButton("Categorias");
+        // btnCategorias.setIcon(new ImageIcon("path/to/category_icon.png"));
+        btnCategorias.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" );
+        btnCategorias.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         btnCategorias.addActionListener(e -> abrirCategoriaUI());
-        painel.add(btnCategorias);
+        gbc.gridy = 2; // Terceira linha
+        buttonPanel.add(btnCategorias, gbc);
 
-        JButton btnFuncionarios = new JButton("Gerenciar Funcionários");
+        // Botão Funcionários
+        JButton btnFuncionarios = new JButton("Funcionários");
+        // btnFuncionarios.setIcon(new ImageIcon("path/to/employee_icon.png"));
+        btnFuncionarios.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" );
+        btnFuncionarios.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         btnFuncionarios.addActionListener(e -> abrirFuncionarioUI());
-        painel.add(btnFuncionarios);
+        gbc.gridy = 3; // Quarta linha
+        buttonPanel.add(btnFuncionarios, gbc);
 
-        JButton btnVendas = new JButton("Gerenciar Vendas");
+        // Botão Vendas
+        JButton btnVendas = new JButton("Vendas");
+        // btnVendas.setIcon(new ImageIcon("path/to/sale_icon.png"));
+        btnVendas.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" );
+        btnVendas.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         btnVendas.addActionListener(e -> abrirVendaUI());
-        painel.add(btnVendas);
+        gbc.gridy = 4; // Quinta linha
+        buttonPanel.add(btnVendas, gbc);
 
-        add(painel);
+        mainPanel.add(buttonPanel, BorderLayout.CENTER); // Adiciona o painel de botões ao centro
+
+        add(mainPanel); // Adiciona o painel principal à janela
     }
 
     private void abrirClienteUI() {
         ClienteDAO clienteDAO = new ClienteDAO(connection);
         ClienteService clienteService = new ClienteService(clienteDAO);
         SwingUtilities.invokeLater(() -> {
-            ClienteUI clienteUI = new ClienteUI(clienteService);
+            ClienteUI clienteUI = new ClienteUI(clienteService, this);
             clienteUI.setVisible(true);
+            this.setVisible(false);
         });
     }
 
     private void abrirProdutoUI() {
         ProdutoDAO produtoDAO = new ProdutoDAO(connection);
         ProdutoService produtoService = new ProdutoService(produtoDAO);
+        CategoriaDAO categoriaDAO = new CategoriaDAO(connection);
         SwingUtilities.invokeLater(() -> {
-            ProdutoUI produtoUI = new ProdutoUI(produtoService);
+            ProdutoUI produtoUI = new ProdutoUI(produtoService, categoriaDAO, this);
             produtoUI.setVisible(true);
+            this.setVisible(false);
         });
     }
 
@@ -86,8 +151,9 @@ public class TelaPrincipalUI extends JFrame {
         CategoriaDAO categoriaDAO = new CategoriaDAO(connection);
         CategoriaService categoriaService = new CategoriaService(categoriaDAO);
         SwingUtilities.invokeLater(() -> {
-            CategoriaUI categoriaUI = new CategoriaUI(categoriaService);
+            CategoriaUI categoriaUI = new CategoriaUI(categoriaService, this);
             categoriaUI.setVisible(true);
+            this.setVisible(false);
         });
     }
 
@@ -95,15 +161,17 @@ public class TelaPrincipalUI extends JFrame {
         FuncionarioDAO funcionarioDAO = new FuncionarioDAO(connection);
         FuncionarioService funcionarioService = new FuncionarioService(funcionarioDAO);
         SwingUtilities.invokeLater(() -> {
-            FuncionarioUI funcionarioUI = new FuncionarioUI(funcionarioService);
+            FuncionarioUI funcionarioUI = new FuncionarioUI(funcionarioService, this);
             funcionarioUI.setVisible(true);
+            this.setVisible(false);
         });
     }
 
     private void abrirVendaUI() {
         SwingUtilities.invokeLater(() -> {
-            VendaUI vendaUI = new VendaUI(connection);
+            VendaUI vendaUI = new VendaUI(connection, this);
             vendaUI.setVisible(true);
+            this.setVisible(false);
         });
     }
 
@@ -111,6 +179,15 @@ public class TelaPrincipalUI extends JFrame {
         System.out.println("DB_URL: " + System.getenv("DB_URL"));
         System.out.println("DB_USER: " + System.getenv("DB_USER"));
         System.out.println("DB_PASSWORD: " + System.getenv("DB_PASSWORD"));
+
+        // ** Importante: Aplicar o FlatLaf aqui! **
+        try {
+            FlatLaf.setup( new FlatLightLaf() ); // Ou FlatDarkLaf, FlatDarculaLaf, etc.
+        } catch ( Exception ex ) {
+            System.err.println( "Failed to initialize FlatLaf" );
+            ex.printStackTrace();
+        }
+
         SwingUtilities.invokeLater(() -> {
             TelaPrincipalUI principal = new TelaPrincipalUI();
             principal.setVisible(true);
