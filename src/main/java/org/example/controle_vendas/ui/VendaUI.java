@@ -10,6 +10,8 @@ import org.example.controle_vendas.model.Funcionario;
 import org.example.controle_vendas.model.ItemVenda;
 import org.example.controle_vendas.model.Produto;
 import org.example.controle_vendas.model.Venda;
+import org.example.controle_vendas.service.ClienteService;
+import org.example.controle_vendas.service.FuncionarioService;
 import org.example.controle_vendas.service.VendaService;
 
 import javax.swing.*;
@@ -33,6 +35,8 @@ public class VendaUI extends JFrame {
     private final ClienteDAO clienteDAO;
     private final FuncionarioDAO funcionarioDAO;
     private final ProdutoDAO produtoDAO;
+    private final ClienteService clienteService;
+    private final FuncionarioService funcionarioService;
     private JFrame telaPrincipal;
 
     private JComboBox<Cliente> cbClientes;
@@ -55,8 +59,10 @@ public class VendaUI extends JFrame {
     public VendaUI(Connection connection, JFrame telaPrincipal) {
         this.vendaService = new VendaService(new VendaDAO(connection));
         this.clienteDAO = new ClienteDAO(connection);
+        this.clienteService = new ClienteService(clienteDAO);
         this.funcionarioDAO = new FuncionarioDAO(connection);
         this.produtoDAO = new ProdutoDAO(connection);
+        this.funcionarioService = new FuncionarioService(funcionarioDAO);
         this.telaPrincipal = telaPrincipal;
 
         this.vendaAtual = new Venda();
@@ -73,7 +79,7 @@ public class VendaUI extends JFrame {
 
     private void initComponents() {
         setTitle("Registro de Vendas");
-        setSize(1000, 700);
+        setSize(1440, 900);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -199,7 +205,7 @@ public class VendaUI extends JFrame {
         JScrollPane spItens = new JScrollPane(tabelaItens);
         spItens.setBorder(BorderFactory.createTitledBorder("Itens da Venda Atual"));
 
-        tabelaModelVendas = new DefaultTableModel(new String[]{"ID", "Cliente", "Funcionário", "Data", "Valor Total", "Status"}, 0) {
+        tabelaModelVendas = new DefaultTableModel(new String[]{"ID", "Cliente", "CPF/CNPJ", "Email", "Telefone", "Funcionário", "Data", "Valor Total", "Status"}, 0) {
             @Override
             public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -438,14 +444,47 @@ public class VendaUI extends JFrame {
     private void carregarVendas() {
         try {
             List<Venda> vendas = vendaService.listarVendas();
+
+            // Cache para evitar múltiplas buscas repetidas ao BD
+            Map<Integer, Cliente> clientesCache = new HashMap<>();
+            Map<Integer, Funcionario> funcionariosCache  = new HashMap<>();
+
             tabelaModelVendas.setRowCount(0);
             for (Venda v : vendas) {
-                String nomeCliente = "ID " + v.getClienteId();
-                String nomeFuncionario = "ID " + v.getFuncionarioId();
+                int clienteId = v.getClienteId();
+                Cliente c = clientesCache.computeIfAbsent(clienteId, id -> {
+                    try {
+                        return clienteService.buscarPorId(id);
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        return null;
+                    }
+                });
+
+                int funcionarioId = v.getFuncionarioId();
+                Funcionario f = funcionariosCache.computeIfAbsent(funcionarioId, id -> {
+                    try {
+                        return funcionarioService.buscarPorId(id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                });
+
+                String nomeCliente = (c != null) ? c.getNome() : "Cliente ID " + clienteId;
+                String cpfCnpj = (c != null) ? c.getCpfCnpj() : "-";
+                String email = (c != null) ? c.getEmail() : "-";
+                String telefone = (c != null) ? c.getTelefone() : "-";
+
+                // Para funcionário, você pode buscar o nome direto via DAO semelhante, ou mostrar ID
+                String nomeFuncionario = (f != null) ? f.getNome() : "-";
 
                 tabelaModelVendas.addRow(new Object[]{
                         v.getVendaId(),
                         nomeCliente,
+                        cpfCnpj,
+                        email,
+                        telefone,
                         nomeFuncionario,
                         v.getData(),
                         v.getValorTotal(),
