@@ -316,7 +316,7 @@ public class VendaUI extends JFrame {
 
     private void carregarComboClientes() {
         try {
-            List<Cliente> clientes = clienteDAO.listarTodos();
+            List<Cliente> clientes = clienteService.listarClientes();
             DefaultComboBoxModel<Cliente> model = new DefaultComboBoxModel<>();
             for (Cliente c : clientes) model.addElement(c);
             cbClientes.setModel(model);
@@ -328,7 +328,7 @@ public class VendaUI extends JFrame {
 
     private void carregarComboFuncionarios() {
         try {
-            List<Funcionario> funcionarios = funcionarioDAO.listarTodos();
+            List<Funcionario> funcionarios = funcionarioService.listarFuncionarios();
             DefaultComboBoxModel<Funcionario> model = new DefaultComboBoxModel<>();
             for (Funcionario f : funcionarios) model.addElement(f);
             cbFuncionarios.setModel(model);
