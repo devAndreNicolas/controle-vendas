@@ -12,6 +12,7 @@ import org.example.controle_vendas.model.Produto;
 import org.example.controle_vendas.model.Venda;
 import org.example.controle_vendas.service.ClienteService;
 import org.example.controle_vendas.service.FuncionarioService;
+import org.example.controle_vendas.service.ProdutoService;
 import org.example.controle_vendas.service.VendaService;
 
 import javax.swing.*;
@@ -32,9 +33,7 @@ import java.util.Map;
 
 public class VendaUI extends JFrame {
     private final VendaService vendaService;
-    private final ClienteDAO clienteDAO;
-    private final FuncionarioDAO funcionarioDAO;
-    private final ProdutoDAO produtoDAO;
+    private final ProdutoService produtoService;
     private final ClienteService clienteService;
     private final FuncionarioService funcionarioService;
     private JFrame telaPrincipal;
@@ -58,11 +57,9 @@ public class VendaUI extends JFrame {
 
     public VendaUI(Connection connection, JFrame telaPrincipal) {
         this.vendaService = new VendaService(new VendaDAO(connection));
-        this.clienteDAO = new ClienteDAO(connection);
-        this.clienteService = new ClienteService(clienteDAO);
-        this.funcionarioDAO = new FuncionarioDAO(connection);
-        this.produtoDAO = new ProdutoDAO(connection);
-        this.funcionarioService = new FuncionarioService(funcionarioDAO);
+        this.funcionarioService = new FuncionarioService(new FuncionarioDAO(connection));
+        this.produtoService = new ProdutoService(new ProdutoDAO(connection));
+        this.clienteService = new ClienteService(new ClienteDAO(connection));
         this.telaPrincipal = telaPrincipal;
 
         this.vendaAtual = new Venda();
@@ -340,7 +337,7 @@ public class VendaUI extends JFrame {
 
     private void carregarComboProdutos() {
         try {
-            List<Produto> produtos = produtoDAO.listarTodos();
+            List<Produto> produtos = produtoService.listarProdutos();
             DefaultComboBoxModel<Produto> model = new DefaultComboBoxModel<>();
             produtosMap.clear();
             for (Produto p : produtos) {
