@@ -43,4 +43,8 @@ public class VendaService {
     public List<Venda> listarVendas() throws SQLException {
         return vendaDAO.listarVendas();
     }
+
+    public void atualizarStatusVenda(int vendaId, String status) throws SQLException {
+        vendaDAO.atualizarStatusVenda(vendaId, status);
+    }
 }

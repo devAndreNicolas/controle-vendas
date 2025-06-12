@@ -1,7 +1,6 @@
 package org.example.controle_vendas.ui;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import org.example.controle_vendas.dao.CategoriaDAO;
 import org.example.controle_vendas.model.Categoria;
 import org.example.controle_vendas.service.CategoriaService;
 
@@ -65,7 +64,7 @@ public class CategoriaUI extends JFrame {
                         BorderFactory.createLineBorder(Color.LIGHT_GRAY)
                 ),
                 "Detalhes da Categoria", TitledBorder.LEFT, TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 16), Color.DARK_GRAY
+                new Font("Segoe UI", Font.BOLD, 16), Color.LIGHT_GRAY
         ));
 
         GridBagConstraints gbc = new GridBagConstraints();

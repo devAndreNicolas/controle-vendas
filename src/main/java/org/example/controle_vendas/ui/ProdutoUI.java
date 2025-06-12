@@ -1,11 +1,14 @@
 package org.example.controle_vendas.ui;
 
 import com.formdev.flatlaf.FlatClientProperties; // Importar para estilos FlatLaf
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatLaf;
 import org.example.controle_vendas.dao.CategoriaDAO;
 import org.example.controle_vendas.dao.ProdutoDAO;
 import org.example.controle_vendas.model.Categoria;
 import org.example.controle_vendas.model.Produto;
 import org.example.controle_vendas.model.UnidadeMedida;
+import org.example.controle_vendas.service.CategoriaService;
 import org.example.controle_vendas.service.ProdutoService;
 
 import javax.swing.*;
@@ -16,45 +19,46 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.NumberFormat; // Para formatar números
+import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale; // Para formatar números
+import java.util.Locale;
 
 public class ProdutoUI extends JFrame {
     private final ProdutoService produtoService;
-    private final CategoriaDAO categoriaDAO;
+    private final CategoriaService categoriaService;
     private JFrame telaPrincipal;
 
     private JComboBox<Categoria> cbCategorias;
     private JComboBox<UnidadeMedida> cbUnidadeMedida;
     private JTextField tfNomeProduto;
-    private JFormattedTextField tfPrecoVenda, tfPrecoCusto; // Mudado para JFormattedTextField
+    private JFormattedTextField tfPrecoVenda, tfPrecoCusto;
     private JTable tabelaProdutos;
     private DefaultTableModel tabelaModel;
-    private JButton btnSalvarAtualizar; // Botão que muda de texto (Salvar/Atualizar)
+    private JButton btnSalvarAtualizar;
     private JButton btnEditar;
-    private JButton btnInativar; // RENOMEADO para "Inativar"
-    private JButton btnLimpar; // Novo botão Limpar
+    private JButton btnInativar;
+    private JButton btnLimpar;
 
-    private Produto produtoEmEdicao; // Novo: Para controlar o produto sendo editado
+    private Produto produtoEmEdicao;
 
-    public ProdutoUI(ProdutoService produtoService, CategoriaDAO categoriaDAO, JFrame telaPrincipal) {
-        this.produtoService = produtoService;
-        this.categoriaDAO = categoriaDAO;
+    public ProdutoUI(Connection connection, JFrame telaPrincipal) {
+        this.produtoService = new ProdutoService(new ProdutoDAO(connection));
+        this.categoriaService = new CategoriaService(new CategoriaDAO(connection));
         this.telaPrincipal = telaPrincipal;
-        this.produtoEmEdicao = null; // Inicializa sem produto em edição
+        this.produtoEmEdicao = null;
 
         initComponents();
         carregarCategorias();
         carregarUnidadesMedida();
         carregarProdutos();
-        atualizarBotoesAcao(); // Atualiza o estado dos botões ao iniciar
+        atualizarBotoesAcao();
     }
 
     private void initComponents() {
-        setTitle("Cadastro e Gerenciamento de Produtos"); // Título mais descritivo
-        setSize(900, 650); // Aumentar tamanho para melhor visualização
+        setTitle("Cadastro e Gerenciamento de Produtos");
+        setSize(900, 650);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -83,7 +87,7 @@ public class ProdutoUI extends JFrame {
                         BorderFactory.createLineBorder(Color.LIGHT_GRAY)
                 ),
                 "Detalhes do Produto", TitledBorder.LEFT, TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 16), Color.DARK_GRAY
+                new Font("Segoe UI", Font.BOLD, 16), Color.LIGHT_GRAY
         ));
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -234,7 +238,7 @@ public class ProdutoUI extends JFrame {
 
     private void carregarCategorias() {
         try {
-            List<Categoria> categorias = categoriaDAO.listarTodos();
+            List<Categoria> categorias = categoriaService.listarCategorias();
             cbCategorias.removeAllItems();
             if (categorias.isEmpty()) {
                 // Adiciona um item placeholder se não houver categorias
@@ -416,12 +420,12 @@ public class ProdutoUI extends JFrame {
 
     private void carregarProdutos() {
         try {
-            List<Produto> produtos = produtoService.listarProdutos(); // Este método já filtra por 'Ativo'
+            List<Produto> produtos = produtoService.listarProdutosAtivos();
             tabelaModel.setRowCount(0);
             for (Produto p : produtos) {
                 String nomeCategoria = "ID " + p.getCategoriaId();
                 try {
-                    Categoria cat = categoriaDAO.buscarPorId(p.getCategoriaId());
+                    Categoria cat = categoriaService.buscarPorId(p.getCategoriaId());
                     if (cat != null) {
                         nomeCategoria = cat.getNome();
                     }

@@ -1,5 +1,6 @@
 package org.example.controle_vendas.ui;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
 import org.example.controle_vendas.dao.CategoriaDAO;
 import org.example.controle_vendas.dao.ClienteDAO;
 import org.example.controle_vendas.dao.FuncionarioDAO;
@@ -10,7 +11,6 @@ import org.example.controle_vendas.service.FuncionarioService;
 import org.example.controle_vendas.service.ProdutoService;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -127,8 +127,7 @@ public class TelaPrincipalUI extends JFrame {
     }
 
     private void abrirClienteUI() {
-        ClienteDAO clienteDAO = new ClienteDAO(connection);
-        ClienteService clienteService = new ClienteService(clienteDAO);
+        ClienteService clienteService = new ClienteService(new ClienteDAO(connection));
         SwingUtilities.invokeLater(() -> {
             ClienteUI clienteUI = new ClienteUI(clienteService, this);
             clienteUI.setVisible(true);
@@ -137,19 +136,17 @@ public class TelaPrincipalUI extends JFrame {
     }
 
     private void abrirProdutoUI() {
-        ProdutoDAO produtoDAO = new ProdutoDAO(connection);
-        ProdutoService produtoService = new ProdutoService(produtoDAO);
+        ProdutoService produtoService = new ProdutoService(new ProdutoDAO(connection));
         CategoriaDAO categoriaDAO = new CategoriaDAO(connection);
         SwingUtilities.invokeLater(() -> {
-            ProdutoUI produtoUI = new ProdutoUI(produtoService, categoriaDAO, this);
+            ProdutoUI produtoUI = new ProdutoUI(connection, this);
             produtoUI.setVisible(true);
             this.setVisible(false);
         });
     }
 
     private void abrirCategoriaUI() {
-        CategoriaDAO categoriaDAO = new CategoriaDAO(connection);
-        CategoriaService categoriaService = new CategoriaService(categoriaDAO);
+        CategoriaService categoriaService = new CategoriaService(new CategoriaDAO(connection));
         SwingUtilities.invokeLater(() -> {
             CategoriaUI categoriaUI = new CategoriaUI(categoriaService, this);
             categoriaUI.setVisible(true);
@@ -158,8 +155,7 @@ public class TelaPrincipalUI extends JFrame {
     }
 
     private void abrirFuncionarioUI() {
-        FuncionarioDAO funcionarioDAO = new FuncionarioDAO(connection);
-        FuncionarioService funcionarioService = new FuncionarioService(funcionarioDAO);
+        FuncionarioService funcionarioService = new FuncionarioService(new FuncionarioDAO(connection));
         SwingUtilities.invokeLater(() -> {
             FuncionarioUI funcionarioUI = new FuncionarioUI(funcionarioService, this);
             funcionarioUI.setVisible(true);
@@ -180,9 +176,8 @@ public class TelaPrincipalUI extends JFrame {
         System.out.println("DB_USER: " + System.getenv("DB_USER"));
         System.out.println("DB_PASSWORD: " + System.getenv("DB_PASSWORD"));
 
-        // ** Importante: Aplicar o FlatLaf aqui! **
         try {
-            FlatLaf.setup( new FlatLightLaf() ); // Ou FlatDarkLaf, FlatDarculaLaf, etc.
+            FlatLaf.setup( new FlatDarculaLaf()); // Ou FlatDarkLaf, FlatDarculaLaf, etc.
         } catch ( Exception ex ) {
             System.err.println( "Failed to initialize FlatLaf" );
             ex.printStackTrace();

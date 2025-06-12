@@ -99,4 +99,16 @@ public class VendaDAO {
         }
         return itens;
     }
+
+    public void atualizarStatusVenda(int vendaId, String status) throws SQLException {
+        String sql = "UPDATE Venda SET status = ? WHERE venda_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, vendaId);
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated == 0) {
+                throw new SQLException("Nenhuma venda encontrada com o ID: " + vendaId);
+            }
+        }
+    }
 }

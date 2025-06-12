@@ -30,6 +30,10 @@ public class ProdutoService {
         produtoDAO.inserir(produto);
     }
 
+    public List<Produto> listarProdutosAtivos() throws SQLException {
+        return produtoDAO.listarTodosAtivos();
+    }
+
     public List<Produto> listarProdutos() throws SQLException {
         return produtoDAO.listarTodos();
     }
@@ -69,5 +73,9 @@ public class ProdutoService {
         }
         // Poderia adicionar validações aqui antes de inativar, se necessário
         produtoDAO.inativar(id);
+    }
+
+    public Produto buscarProdutoMaisVendido() throws SQLException {
+        return produtoDAO.buscarProdutoMaisVendido();
     }
 }

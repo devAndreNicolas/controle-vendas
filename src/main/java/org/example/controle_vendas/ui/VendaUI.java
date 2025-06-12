@@ -105,7 +105,7 @@ public class VendaUI extends JFrame {
                         BorderFactory.createLineBorder(Color.LIGHT_GRAY)
                 ),
                 "Nova Venda e Itens", TitledBorder.LEFT, TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 16), Color.DARK_GRAY
+                new Font("Segoe UI", Font.BOLD, 16), Color.LIGHT_GRAY
         ));
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -167,13 +167,20 @@ public class VendaUI extends JFrame {
         itemButtonsPanel.add(btnRemoverItem);
         painelNovaVenda.add(itemButtonsPanel, gbc);
 
+        JButton btnProdutoMaisVendido = new JButton("Verificar Produto Mais Vendido");
+        // REMOVIDA A LINHA DE ÍCONE: btnRemoverItem.setIcon(new ImageIcon(getClass().getResource("/icons/remove_item_icon.png")));
+        btnProdutoMaisVendido.putClientProperty(FlatClientProperties.BUTTON_TYPE, "roundRect");
+        btnProdutoMaisVendido.addActionListener(e -> mostrarProdutoMaisVendido());
+        itemButtonsPanel.add(btnProdutoMaisVendido);
+        painelNovaVenda.add(itemButtonsPanel, gbc);
+
         // Linha 5: Total da Venda Atual (destaque)
         gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 3;
         gbc.fill = GridBagConstraints.HORIZONTAL; gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(20, 5, 5, 5);
         lblTotalVendaAtual = new JLabel("TOTAL DA VENDA: R$ 0,00");
         lblTotalVendaAtual.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        lblTotalVendaAtual.setForeground(new Color(0, 100, 0));
+        lblTotalVendaAtual.setForeground(Color.GREEN);
         painelNovaVenda.add(lblTotalVendaAtual, gbc);
 
         // Linha 6: Botão Salvar Venda (botão principal de ação)
@@ -202,7 +209,7 @@ public class VendaUI extends JFrame {
         JScrollPane spItens = new JScrollPane(tabelaItens);
         spItens.setBorder(BorderFactory.createTitledBorder("Itens da Venda Atual"));
 
-        tabelaModelVendas = new DefaultTableModel(new String[]{"ID", "Cliente", "CPF/CNPJ", "Email", "Telefone", "Funcionário", "Data", "Valor Total", "Status"}, 0) {
+        tabelaModelVendas = new DefaultTableModel(new String[]{"Cliente", "CPF/CNPJ", "Email", "Telefone", "Funcionário", "Data", "Produto" , "Valor Total", "Status"}, 0) {
             @Override
             public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -337,7 +344,7 @@ public class VendaUI extends JFrame {
 
     private void carregarComboProdutos() {
         try {
-            List<Produto> produtos = produtoService.listarProdutos();
+            List<Produto> produtos = produtoService.listarProdutosAtivos();
             DefaultComboBoxModel<Produto> model = new DefaultComboBoxModel<>();
             produtosMap.clear();
             for (Produto p : produtos) {
@@ -429,6 +436,7 @@ public class VendaUI extends JFrame {
             try {
                 vendaService.cadastrarVenda(vendaAtual);
                 JOptionPane.showMessageDialog(this, "Venda salva com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                finalizarVenda();
                 resetarFormularioVenda();
                 carregarVendas();
             } catch (Exception e) {
@@ -441,49 +449,49 @@ public class VendaUI extends JFrame {
     private void carregarVendas() {
         try {
             List<Venda> vendas = vendaService.listarVendas();
+            List<Produto> produtos = produtoService.listarProdutos();
+            produtosMap.clear();
+            for (Produto p : produtos) {
+                produtosMap.put(p.getProdutoId(), p);
+            }
 
-            // Cache para evitar múltiplas buscas repetidas ao BD
             Map<Integer, Cliente> clientesCache = new HashMap<>();
-            Map<Integer, Funcionario> funcionariosCache  = new HashMap<>();
+            Map<Integer, Funcionario> funcionariosCache = new HashMap<>();
 
             tabelaModelVendas.setRowCount(0);
+
             for (Venda v : vendas) {
-                int clienteId = v.getClienteId();
-                Cliente c = clientesCache.computeIfAbsent(clienteId, id -> {
-                    try {
-                        return clienteService.buscarPorId(id);
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                        return null;
-                    }
+                Cliente cliente = clientesCache.computeIfAbsent(v.getClienteId(), id -> {
+                    try { return clienteService.buscarPorId(id); }
+                    catch (SQLException ex) { ex.printStackTrace(); return null; }
                 });
 
-                int funcionarioId = v.getFuncionarioId();
-                Funcionario f = funcionariosCache.computeIfAbsent(funcionarioId, id -> {
-                    try {
-                        return funcionarioService.buscarPorId(id);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
+                Funcionario funcionario = funcionariosCache.computeIfAbsent(v.getFuncionarioId(), id -> {
+                    try { return funcionarioService.buscarPorId(id); }
+                    catch (SQLException ex) { ex.printStackTrace(); return null; }
                 });
 
-                String nomeCliente = (c != null) ? c.getNome() : "Cliente ID " + clienteId;
-                String cpfCnpj = (c != null) ? c.getCpfCnpj() : "-";
-                String email = (c != null) ? c.getEmail() : "-";
-                String telefone = (c != null) ? c.getTelefone() : "-";
-
-                // Para funcionário, você pode buscar o nome direto via DAO semelhante, ou mostrar ID
-                String nomeFuncionario = (f != null) ? f.getNome() : "-";
+                // Monta a lista de nomes dos produtos separados por ", "
+                String nomesProdutos = "-";
+                if (v.getItens() != null && !v.getItens().isEmpty()) {
+                    nomesProdutos = String.join(", ",
+                            v.getItens().stream()
+                                    .map(item -> {
+                                        Produto p = produtosMap.get(item.getProdutoId());
+                                        return (p != null) ? p.getNomeProduto() : "Produto ID " + item.getProdutoId();
+                                    })
+                                    .toList()
+                    );
+                }
 
                 tabelaModelVendas.addRow(new Object[]{
-                        v.getVendaId(),
-                        nomeCliente,
-                        cpfCnpj,
-                        email,
-                        telefone,
-                        nomeFuncionario,
+                        cliente != null ? cliente.getNome() : "Cliente ID " + v.getClienteId(),
+                        cliente != null ? cliente.getCpfCnpj() : "-",
+                        cliente != null ? cliente.getEmail() : "-",
+                        cliente != null ? cliente.getTelefone() : "-",
+                        funcionario != null ? funcionario.getNome() : "-",
                         v.getData(),
+                        nomesProdutos,
                         v.getValorTotal(),
                         v.getStatus()
                 });
@@ -491,6 +499,37 @@ public class VendaUI extends JFrame {
         } catch (SQLException e) {
             showError("Erro ao listar vendas: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private void mostrarProdutoMaisVendido() {
+        try {
+            Produto produtoMaisVendido = produtoService.buscarProdutoMaisVendido();
+            if (produtoMaisVendido != null) {
+                JOptionPane.showMessageDialog(this,
+                        "Produto mais vendido:\n" +
+                                produtoMaisVendido.getNomeProduto(),
+                        "Produto Mais Vendido",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Nenhum produto vendido até o momento.",
+                        "Produto Mais Vendido",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (SQLException e) {
+            showError("Erro ao buscar produto mais vendido: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void finalizarVenda() {
+        try {
+            vendaService.atualizarStatusVenda(vendaAtual.getVendaId(), "FINALIZADA");
+            JOptionPane.showMessageDialog(this, "Venda finalizada com sucesso!");
+            carregarVendas();
+        } catch (SQLException e) {
+            showError("Erro ao atualizar status da venda: " + e.getMessage());
         }
     }
 

@@ -32,9 +32,28 @@ public class ProdutoDAO {
     }
 
     // MODIFICADO: Lista apenas produtos com status 'Ativo'
-    public List<Produto> listarTodos() throws SQLException {
+    public List<Produto> listarTodosAtivos() throws SQLException {
         List<Produto> produtos = new ArrayList<>();
         String sql = "SELECT * FROM Produto WHERE status = 'Ativo'"; // Filtra por status
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Produto p = new Produto();
+                p.setProdutoId(rs.getInt("produto_id"));
+                p.setCategoriaId(rs.getInt("categoria_id"));
+                p.setNomeProduto(rs.getString("nome_produto"));
+                p.setPrecoVenda(rs.getDouble("preco_venda")); // getDouble para preços
+                p.setPrecoCusto(rs.getDouble("preco_custo")); // getDouble para preços
+                p.setUnidadeMedida(rs.getString("unidade_medida"));
+                produtos.add(p);
+            }
+        }
+        return produtos;
+    }
+
+    public List<Produto> listarTodos() throws SQLException {
+        List<Produto> produtos = new ArrayList<>();
+        String sql = "SELECT * FROM Produto"; // Filtra por status
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
@@ -92,6 +111,25 @@ public class ProdutoDAO {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
+        }
+    }
+
+    public Produto buscarProdutoMaisVendido() throws SQLException {
+        String sql = "SELECT p.produto_id, p.nome_produto, SUM(iv.quantidade_vendida) AS total_vendido " +
+                "FROM produto p " +
+                "JOIN item_venda iv ON p.produto_id = iv.produto_id " +
+                "GROUP BY p.produto_id, p.nome_produto " +
+                "ORDER BY total_vendido DESC " +
+                "LIMIT 1";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                Produto produto = new Produto();
+                produto.setNomeProduto(rs.getString("nome_produto"));
+                return produto;
+            }
+            return null;
         }
     }
 }

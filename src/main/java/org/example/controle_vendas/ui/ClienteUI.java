@@ -1,7 +1,6 @@
 package org.example.controle_vendas.ui;
 
 import com.formdev.flatlaf.FlatClientProperties; // Importar para estilos FlatLaf
-import org.example.controle_vendas.dao.ClienteDAO; // Mantenha, necessário para o serviço
 import org.example.controle_vendas.model.Cliente;
 import org.example.controle_vendas.service.ClienteService;
 
@@ -70,7 +69,7 @@ public class ClienteUI extends JFrame {
                         BorderFactory.createLineBorder(Color.LIGHT_GRAY)
                 ),
                 "Detalhes do Cliente", TitledBorder.LEFT, TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 16), Color.DARK_GRAY
+                new Font("Segoe UI", Font.BOLD, 16), Color.LIGHT_GRAY
         ));
 
         GridBagConstraints gbc = new GridBagConstraints();
