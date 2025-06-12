@@ -58,7 +58,7 @@ public class ProdutoUI extends JFrame {
 
     private void initComponents() {
         setTitle("Cadastro e Gerenciamento de Produtos");
-        setSize(900, 650);
+        setSize(1440, 900);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 

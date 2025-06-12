@@ -76,23 +76,23 @@ public class TelaPrincipalUI extends JFrame {
         // Sugestão: Use ImageIcon para adicionar ícones aos botões (ex: new ImageIcon("path/to/icon.png"))
         // Você precisaria ter os arquivos de imagem (.png) em um diretório acessível.
 
+        // Botão Funcionários
+        JButton btnFuncionarios = new JButton("Funcionários");
+        // btnFuncionarios.setIcon(new ImageIcon("path/to/employee_icon.png"));
+        btnFuncionarios.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" );
+        btnFuncionarios.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        btnFuncionarios.addActionListener(e -> abrirFuncionarioUI());
+        gbc.gridy = 0;
+        buttonPanel.add(btnFuncionarios, gbc);
+
         // Botão Clientes
         JButton btnClientes = new JButton("Clientes"); // Texto mais conciso
         // btnClientes.setIcon(new ImageIcon("path/to/customer_icon.png")); // Exemplo de ícone
         btnClientes.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" ); // Estilo FlatLaf (opcional)
         btnClientes.setFont(new Font("Segoe UI", Font.PLAIN, 16)); // Fonte maior para botões
         btnClientes.addActionListener(e -> abrirClienteUI());
-        gbc.gridy = 0; // Primeira linha
+        gbc.gridy = 1;
         buttonPanel.add(btnClientes, gbc);
-
-        // Botão Produtos
-        JButton btnProdutos = new JButton("Produtos");
-        // btnProdutos.setIcon(new ImageIcon("path/to/product_icon.png"));
-        btnProdutos.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" );
-        btnProdutos.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        btnProdutos.addActionListener(e -> abrirProdutoUI());
-        gbc.gridy = 1; // Segunda linha
-        buttonPanel.add(btnProdutos, gbc);
 
         // Botão Categorias
         JButton btnCategorias = new JButton("Categorias");
@@ -100,17 +100,17 @@ public class TelaPrincipalUI extends JFrame {
         btnCategorias.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" );
         btnCategorias.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         btnCategorias.addActionListener(e -> abrirCategoriaUI());
-        gbc.gridy = 2; // Terceira linha
+        gbc.gridy = 2;
         buttonPanel.add(btnCategorias, gbc);
 
-        // Botão Funcionários
-        JButton btnFuncionarios = new JButton("Funcionários");
-        // btnFuncionarios.setIcon(new ImageIcon("path/to/employee_icon.png"));
-        btnFuncionarios.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" );
-        btnFuncionarios.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        btnFuncionarios.addActionListener(e -> abrirFuncionarioUI());
-        gbc.gridy = 3; // Quarta linha
-        buttonPanel.add(btnFuncionarios, gbc);
+        // Botão Produtos
+        JButton btnProdutos = new JButton("Produtos");
+        // btnProdutos.setIcon(new ImageIcon("path/to/product_icon.png"));
+        btnProdutos.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" );
+        btnProdutos.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        btnProdutos.addActionListener(e -> abrirProdutoUI());
+        gbc.gridy = 3;
+        buttonPanel.add(btnProdutos, gbc);
 
         // Botão Vendas
         JButton btnVendas = new JButton("Vendas");
@@ -118,12 +118,12 @@ public class TelaPrincipalUI extends JFrame {
         btnVendas.putClientProperty( FlatClientProperties.BUTTON_TYPE, "square" );
         btnVendas.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         btnVendas.addActionListener(e -> abrirVendaUI());
-        gbc.gridy = 4; // Quinta linha
+        gbc.gridy = 4;
         buttonPanel.add(btnVendas, gbc);
 
-        mainPanel.add(buttonPanel, BorderLayout.CENTER); // Adiciona o painel de botões ao centro
+        mainPanel.add(buttonPanel, BorderLayout.CENTER);
 
-        add(mainPanel); // Adiciona o painel principal à janela
+        add(mainPanel);
     }
 
     private void abrirClienteUI() {

@@ -435,7 +435,6 @@ public class VendaUI extends JFrame {
         if (confirm == JOptionPane.YES_OPTION) {
             try {
                 vendaService.cadastrarVenda(vendaAtual);
-                JOptionPane.showMessageDialog(this, "Venda salva com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 finalizarVenda();
                 resetarFormularioVenda();
                 carregarVendas();

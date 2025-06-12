@@ -21,26 +21,26 @@ public class ClienteUI extends JFrame {
     private JTextField tfNome, tfCpfCnpj, tfEmail, tfTelefone, tfEndereco;
     private JTable tabelaClientes;
     private DefaultTableModel tabelaModel;
-    private JButton btnSalvarAtualizar; // Botão que muda de texto (Salvar/Atualizar)
+    private JButton btnSalvarAtualizar;
     private JButton btnEditar;
-    private JButton btnInativar; // RENOMEADO para "Inativar"
-    private JButton btnLimpar; // Novo botão Limpar
+    private JButton btnInativar;
+    private JButton btnLimpar;
 
-    private Cliente clienteEmEdicao; // Novo: Para controlar o cliente sendo editado
+    private Cliente clienteEmEdicao;
 
     public ClienteUI(ClienteService clienteService, JFrame telaPrincipal) {
         this.clienteService = clienteService;
         this.telaPrincipal = telaPrincipal;
-        this.clienteEmEdicao = null; // Inicializa sem cliente em edição
+        this.clienteEmEdicao = null;
 
         initComponents();
         carregarClientes();
-        atualizarBotoesAcao(); // Atualiza o estado dos botões ao iniciar
+        atualizarBotoesAcao();
     }
 
     private void initComponents() {
-        setTitle("Cadastro e Gerenciamento de Clientes"); // Título mais descritivo
-        setSize(800, 600); // Aumentar tamanho para melhor visualização
+        setTitle("Cadastro e Gerenciamento de Clientes");
+        setSize(1440, 900);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 

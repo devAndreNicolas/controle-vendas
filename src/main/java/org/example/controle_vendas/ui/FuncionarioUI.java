@@ -31,16 +31,16 @@ public class FuncionarioUI extends JFrame {
     public FuncionarioUI(FuncionarioService funcionarioService, JFrame telaPrincipal) {
         this.funcionarioService = funcionarioService;
         this.telaPrincipal = telaPrincipal;
-        this.funcionarioEmEdicao = null; // Inicializa sem funcionário em edição
+        this.funcionarioEmEdicao = null;
 
         initComponents();
         carregarFuncionarios();
-        atualizarBotoesAcao(); // Atualiza o estado dos botões ao iniciar
+        atualizarBotoesAcao();
     }
 
     private void initComponents() {
-        setTitle("Cadastro e Gerenciamento de Funcionários"); // Título mais descritivo
-        setSize(700, 500); // Aumentar tamanho para melhor visualização
+        setTitle("Cadastro e Gerenciamento de Funcionários");
+        setSize(1440, 900);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
