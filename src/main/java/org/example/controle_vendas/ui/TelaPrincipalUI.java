@@ -51,7 +51,7 @@ public class TelaPrincipalUI extends JFrame {
     }
 
     private void initComponents() {
-        setSize(450, 450); // Aumentar um pouco o tamanho
+        setSize(800,600); // Aumentar um pouco o tamanho
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -172,10 +172,6 @@ public class TelaPrincipalUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        System.out.println("DB_URL: " + System.getenv("DB_URL"));
-        System.out.println("DB_USER: " + System.getenv("DB_USER"));
-        System.out.println("DB_PASSWORD: " + System.getenv("DB_PASSWORD"));
-
         try {
             FlatLaf.setup( new FlatDarculaLaf()); // Ou FlatDarkLaf, FlatDarculaLaf, etc.
         } catch ( Exception ex ) {
