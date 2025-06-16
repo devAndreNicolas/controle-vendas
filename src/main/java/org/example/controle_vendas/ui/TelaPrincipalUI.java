@@ -73,8 +73,6 @@ public class TelaPrincipalUI extends JFrame {
         gbc.weightx = 1.0; // Distribui o espaço horizontal uniformemente
 
         // Criar e adicionar os botões
-        // Sugestão: Use ImageIcon para adicionar ícones aos botões (ex: new ImageIcon("path/to/icon.png"))
-        // Você precisaria ter os arquivos de imagem (.png) em um diretório acessível.
 
         // Botão Funcionários
         JButton btnFuncionarios = new JButton("Funcionários");

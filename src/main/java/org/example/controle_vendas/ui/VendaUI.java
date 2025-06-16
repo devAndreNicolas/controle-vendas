@@ -46,6 +46,10 @@ public class VendaUI extends JFrame {
     private JLabel lblPrecoUnitario;
     private JLabel lblTotalVendaAtual;
 
+    private JSpinner spDataConsulta;
+    private JButton btnConsultarTotalVendas;
+    private JLabel lblTotalVendasPorData;
+
     private JTable tabelaItens;
     private DefaultTableModel tabelaModelItens;
     private JButton btnSalvarVenda;
@@ -89,17 +93,69 @@ public class VendaUI extends JFrame {
             }
         });
 
-        // ====================================================================================
-        // PAINEL PRINCIPAL com BorderLayout e padding
-        // ====================================================================================
         JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
         mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        // ====================================================================================
-        // PAINEL DE NOVA VENDA (Formulário de Adição de Itens e Botões de Ação)
-        // ====================================================================================
-        JPanel painelNovaVenda = new JPanel(new GridBagLayout());
-        painelNovaVenda.setBorder(BorderFactory.createTitledBorder(
+        // --- PAINEL DE CONSULTA DE TOTAL DE VENDAS (TOPO) ---
+        JPanel painelConsultaTotalVendas = criarPainelConsultaTotalVendas();
+        mainPanel.add(painelConsultaTotalVendas, BorderLayout.NORTH);
+
+        // --- PAINEL DE NOVA VENDA (ESQUERDA) ---
+        JPanel painelNovaVenda = criarPainelNovaVenda();
+        mainPanel.add(painelNovaVenda, BorderLayout.WEST);
+
+        // --- PAINEL CENTRAL COM TABELAS ---
+        JPanel painelCentro = criarPainelCentroComTabelas();
+        mainPanel.add(painelCentro, BorderLayout.CENTER);
+
+        add(mainPanel);
+    }
+
+    // Método para criar o painel de consulta (topo)
+    private JPanel criarPainelConsultaTotalVendas() {
+        JPanel painel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+
+        Font fonteTitulo = new Font("Segoe UI", Font.BOLD, 16);
+        Font fonteTexto = new Font("Segoe UI", Font.PLAIN, 14);
+
+        painel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEmptyBorder(10, 10, 10, 10),
+                "Consulta: Total de Vendas por Data",
+                TitledBorder.LEFT, TitledBorder.TOP,
+                fonteTitulo,
+                Color.DARK_GRAY
+        ));
+
+        JLabel lblData = new JLabel("Data:");
+        lblData.setFont(fonteTexto);
+        painel.add(lblData);
+
+        SpinnerDateModel dateModel = new SpinnerDateModel(new Date(), null, null, java.util.Calendar.DAY_OF_MONTH);
+        spDataConsulta = new JSpinner(dateModel);
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spDataConsulta, "yyyy-MM-dd");
+        spDataConsulta.setEditor(dateEditor);
+        spDataConsulta.setPreferredSize(new Dimension(130, 30));
+        painel.add(spDataConsulta);
+
+        btnConsultarTotalVendas = new JButton("Consultar");
+        btnConsultarTotalVendas.putClientProperty(FlatClientProperties.BUTTON_TYPE, "roundRect");
+        btnConsultarTotalVendas.setFont(fonteTexto);
+        btnConsultarTotalVendas.setPreferredSize(new Dimension(130, 30));
+        btnConsultarTotalVendas.addActionListener(e -> consultarTotalVendasPorData());
+        painel.add(btnConsultarTotalVendas);
+
+        lblTotalVendasPorData = new JLabel("Total de vendas: -");
+        lblTotalVendasPorData.setFont(fonteTexto);
+        lblTotalVendasPorData.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        painel.add(lblTotalVendasPorData);
+
+        return painel;
+    }
+
+    // Método para criar o painel de nova venda (esquerda)
+    private JPanel criarPainelNovaVenda() {
+        JPanel painel = new JPanel(new GridBagLayout());
+        painel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createCompoundBorder(
                         BorderFactory.createEmptyBorder(10, 10, 10, 10),
                         BorderFactory.createLineBorder(Color.LIGHT_GRAY)
@@ -107,99 +163,94 @@ public class VendaUI extends JFrame {
                 "Nova Venda e Itens", TitledBorder.LEFT, TitledBorder.TOP,
                 new Font("Segoe UI", Font.BOLD, 16), Color.LIGHT_GRAY
         ));
+        painel.setPreferredSize(new Dimension(500, painel.getPreferredSize().height));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Linha 0: Cliente
+        // Cliente
         gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST;
-        painelNovaVenda.add(new JLabel("Cliente:"), gbc);
+        painel.add(new JLabel("Cliente:"), gbc);
         gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 1.0;
         cbClientes = new JComboBox<>();
-        painelNovaVenda.add(cbClientes, gbc);
+        painel.add(cbClientes, gbc);
 
-        // Linha 1: Funcionário
+        // Funcionário
         gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0; gbc.anchor = GridBagConstraints.EAST;
-        painelNovaVenda.add(new JLabel("Funcionário:"), gbc);
+        painel.add(new JLabel("Funcionário:"), gbc);
         gbc.gridx = 1; gbc.gridy = 1; gbc.weightx = 1.0;
         cbFuncionarios = new JComboBox<>();
-        painelNovaVenda.add(cbFuncionarios, gbc);
+        painel.add(cbFuncionarios, gbc);
 
-        // Linha 2: Produto
+        // Produto
         gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0; gbc.anchor = GridBagConstraints.EAST;
-        painelNovaVenda.add(new JLabel("Produto:"), gbc);
+        painel.add(new JLabel("Produto:"), gbc);
         gbc.gridx = 1; gbc.gridy = 2; gbc.weightx = 1.0;
         cbProdutos = new JComboBox<>();
         cbProdutos.addActionListener(e -> exibirPrecoProdutoSelecionado());
-        painelNovaVenda.add(cbProdutos, gbc);
+        painel.add(cbProdutos, gbc);
 
-        // Linha 2, Coluna 2: Preço Unitário do Produto Selecionado
+        // Preço unitário
         gbc.gridx = 2; gbc.gridy = 2; gbc.weightx = 0; gbc.anchor = GridBagConstraints.WEST;
         lblPrecoUnitario = new JLabel("Preço Unit.: R$ 0,00");
-        painelNovaVenda.add(lblPrecoUnitario, gbc);
+        painel.add(lblPrecoUnitario, gbc);
 
-        // Linha 3: Quantidade (com JSpinner)
+        // Quantidade
         gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0; gbc.anchor = GridBagConstraints.EAST;
-        painelNovaVenda.add(new JLabel("Quantidade:"), gbc);
+        painel.add(new JLabel("Quantidade:"), gbc);
         gbc.gridx = 1; gbc.gridy = 3; gbc.weightx = 1.0;
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(1, 1, 999, 1);
         spQuantidade = new JSpinner(spinnerModel);
-        JSpinner.DefaultEditor spinnerEditor = (JSpinner.DefaultEditor) spQuantidade.getEditor();
-        spinnerEditor.getTextField().setEditable(true);
-        painelNovaVenda.add(spQuantidade, gbc);
+        ((JSpinner.DefaultEditor) spQuantidade.getEditor()).getTextField().setEditable(true);
+        painel.add(spQuantidade, gbc);
 
-        // Linha 4: Botões de Ação para Itens (Adicionar e Remover)
+        // Botões de ação para itens
         gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 3;
         gbc.fill = GridBagConstraints.NONE; gbc.anchor = GridBagConstraints.CENTER;
         JPanel itemButtonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
 
         btnAddItem = new JButton("Adicionar Item");
-        // REMOVIDA A LINHA DE ÍCONE: btnAddItem.setIcon(new ImageIcon(getClass().getResource("/icons/add_item_icon.png")));
         btnAddItem.putClientProperty(FlatClientProperties.BUTTON_TYPE, "roundRect");
         btnAddItem.addActionListener(e -> adicionarItem());
         itemButtonsPanel.add(btnAddItem);
 
         JButton btnRemoverItem = new JButton("Remover Item Selecionado");
-        // REMOVIDA A LINHA DE ÍCONE: btnRemoverItem.setIcon(new ImageIcon(getClass().getResource("/icons/remove_item_icon.png")));
         btnRemoverItem.putClientProperty(FlatClientProperties.BUTTON_TYPE, "roundRect");
         btnRemoverItem.addActionListener(e -> removerItemSelecionado());
         itemButtonsPanel.add(btnRemoverItem);
-        painelNovaVenda.add(itemButtonsPanel, gbc);
 
         JButton btnProdutoMaisVendido = new JButton("Verificar Produto Mais Vendido");
-        // REMOVIDA A LINHA DE ÍCONE: btnRemoverItem.setIcon(new ImageIcon(getClass().getResource("/icons/remove_item_icon.png")));
         btnProdutoMaisVendido.putClientProperty(FlatClientProperties.BUTTON_TYPE, "roundRect");
         btnProdutoMaisVendido.addActionListener(e -> mostrarProdutoMaisVendido());
         itemButtonsPanel.add(btnProdutoMaisVendido);
-        painelNovaVenda.add(itemButtonsPanel, gbc);
 
-        // Linha 5: Total da Venda Atual (destaque)
+        painel.add(itemButtonsPanel, gbc);
+
+        // Total da venda atual
         gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 3;
         gbc.fill = GridBagConstraints.HORIZONTAL; gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(20, 5, 5, 5);
         lblTotalVendaAtual = new JLabel("TOTAL DA VENDA: R$ 0,00");
         lblTotalVendaAtual.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblTotalVendaAtual.setForeground(Color.GREEN);
-        painelNovaVenda.add(lblTotalVendaAtual, gbc);
+        painel.add(lblTotalVendaAtual, gbc);
 
-        // Linha 6: Botão Salvar Venda (botão principal de ação)
+        // Botão salvar venda
         gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 3;
         gbc.fill = GridBagConstraints.HORIZONTAL; gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(10, 5, 5, 5);
         btnSalvarVenda = new JButton("FINALIZAR VENDA");
-        // REMOVIDA A LINHA DE ÍCONE: btnSalvarVenda.setIcon(new ImageIcon(getClass().getResource("/icons/save_sale_icon.png")));
         btnSalvarVenda.setFont(new Font("Segoe UI", Font.BOLD, 18));
         btnSalvarVenda.putClientProperty(FlatClientProperties.BUTTON_TYPE, "square");
         btnSalvarVenda.addActionListener(e -> salvarVenda());
-        painelNovaVenda.add(btnSalvarVenda, gbc);
+        painel.add(btnSalvarVenda, gbc);
 
-        mainPanel.add(painelNovaVenda, BorderLayout.WEST);
+        return painel;
+    }
 
-        // ====================================================================================
-        // TABELAS (Itens da Venda Atual e Histórico de Vendas)
-        // ====================================================================================
-
+    // Método para criar painel central com as tabelas
+    private JPanel criarPainelCentroComTabelas() {
         tabelaModelItens = new DefaultTableModel(new String[]{"Produto", "Quantidade", "Preço Unit.", "Subtotal"}, 0) {
             @Override
             public boolean isCellEditable(int row, int col) { return false; }
@@ -209,7 +260,7 @@ public class VendaUI extends JFrame {
         JScrollPane spItens = new JScrollPane(tabelaItens);
         spItens.setBorder(BorderFactory.createTitledBorder("Itens da Venda Atual"));
 
-        tabelaModelVendas = new DefaultTableModel(new String[]{"Cliente", "CPF/CNPJ", "Email", "Telefone", "Funcionário", "Data", "Produto" , "Valor Total", "Status"}, 0) {
+        tabelaModelVendas = new DefaultTableModel(new String[]{"Cliente", "CPF/CNPJ", "Email", "Telefone", "Funcionário", "Data", "Produto", "Valor Total", "Status"}, 0) {
             @Override
             public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -222,9 +273,10 @@ public class VendaUI extends JFrame {
         splitPaneTabelas.setResizeWeight(0.5);
         splitPaneTabelas.setDividerSize(8);
 
-        mainPanel.add(splitPaneTabelas, BorderLayout.CENTER);
+        JPanel painelCentro = new JPanel(new BorderLayout(0, 10));
+        painelCentro.add(splitPaneTabelas, BorderLayout.CENTER);
 
-        add(mainPanel);
+        return painelCentro;
     }
 
     // --- MÉTODOS AUXILIARES PARA UI/UX ---
@@ -529,6 +581,22 @@ public class VendaUI extends JFrame {
             carregarVendas();
         } catch (SQLException e) {
             showError("Erro ao atualizar status da venda: " + e.getMessage());
+        }
+    }
+
+    private void consultarTotalVendasPorData() {
+        try {
+            Date dataSelecionada = (Date) spDataConsulta.getValue();
+            java.time.LocalDate dataLocal = dataSelecionada.toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+
+            int total = vendaService.contarVendasPorData(dataLocal);
+
+            lblTotalVendasPorData.setText("Total de vendas na data selecionada" + ": " + total);
+        } catch (SQLException e) {
+            showError("Erro ao consultar total de vendas: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

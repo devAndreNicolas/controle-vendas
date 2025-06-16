@@ -47,4 +47,8 @@ public class VendaService {
     public void atualizarStatusVenda(int vendaId, String status) throws SQLException {
         vendaDAO.atualizarStatusVenda(vendaId, status);
     }
+
+    public int contarVendasPorData(java.time.LocalDate data) throws SQLException {
+        return vendaDAO.contarVendasPorData(data);
+    }
 }
