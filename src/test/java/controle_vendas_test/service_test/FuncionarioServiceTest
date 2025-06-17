@@ -1,0 +1,32 @@
+package controle_vendas_test.service_test;
+
+import java.sql.SQLException;
+
+import org.example.controle_vendas.model.Funcionario;
+import org.example.controle_vendas.service.FuncionarioService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import controle_vendas_test.service_test.mock_DAO.FuncionarioDAOFake;
+
+class FuncionarioServiceTest {
+
+    private FuncionarioService funcionarioService;
+
+    @BeforeEach
+    void setUp() {
+        funcionarioService = new FuncionarioService(new FuncionarioDAOFake());
+    }
+
+    @Test
+    void deveRetornarDadosDoFuncionarioPorId() throws SQLException {
+        Funcionario funcionario = funcionarioService.buscarPorId(1);
+
+        assertNotNull(funcionario);
+        assertEquals(1, funcionario.getFuncionarioId());
+        assertEquals("Guilherme Vieira", funcionario.getNome());
+        assertEquals("000.000.000-00", funcionario.getCpf());
+    }
+}
