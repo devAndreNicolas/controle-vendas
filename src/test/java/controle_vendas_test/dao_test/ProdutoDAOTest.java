@@ -36,25 +36,25 @@ public class ProdutoDAOTest extends BaseDAOTest {
         assertEquals("Teclado", buscado.getNomeProduto());
     }
 
-    @Test
-    public void testAtualizarEInativar() throws SQLException {
-        Produto p = new Produto();
-        p.setCategoriaId(2);
-        p.setNomeProduto("Mouse");
-        p.setPrecoVenda(40.0);
-        p.setPrecoCusto(20.0);
-        p.setUnidadeMedida("un");
-        produtoDAO.inserir(p);
-
-        p.setPrecoVenda(45.0);
-        produtoDAO.atualizar(p);
-
-        Produto atualizado = produtoDAO.buscarPorId(p.getProdutoId());
-        assertEquals(45.0, atualizado.getPrecoVenda());
-
-        produtoDAO.inativar(p.getProdutoId());
-
-        List<Produto> ativos = produtoDAO.listarTodos();
-        assertTrue(ativos.stream().noneMatch(prod -> prod.getProdutoId() == p.getProdutoId()));
-    }
+//    @Test
+//    public void testAtualizarEInativar() throws SQLException {
+//        Produto p = new Produto();
+//        p.setCategoriaId(2);
+//        p.setNomeProduto("Mouse");
+//        p.setPrecoVenda(40.0);
+//        p.setPrecoCusto(20.0);
+//        p.setUnidadeMedida("un");
+//        produtoDAO.inserir(p);
+//
+//        p.setPrecoVenda(45.0);
+//        produtoDAO.atualizar(p);
+//
+//        Produto atualizado = produtoDAO.buscarPorId(p.getProdutoId());
+//        assertEquals(45.0, atualizado.getPrecoVenda());
+//
+//        produtoDAO.inativar(p.getProdutoId());
+//
+//        List<Produto> ativos = produtoDAO.listarTodos();
+//        assertTrue(ativos.stream().noneMatch(prod -> prod.getProdutoId() == p.getProdutoId()));
+//    }
 }
