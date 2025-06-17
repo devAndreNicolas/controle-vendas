@@ -12,14 +12,11 @@ public class ProdutoServiceTest {
 
     @Test
     public void testBuscarProdutoMaisVendido() throws SQLException {
-        // Arrange
         ProdutoDAOFake produtoDAOFake = new ProdutoDAOFake();
         ProdutoService produtoService = new ProdutoService(produtoDAOFake);
 
-        // Act
         Produto produtoMaisVendido = produtoService.buscarProdutoMaisVendido();
 
-        // Assert
         Assertions.assertNotNull(produtoMaisVendido, "Produto mais vendido não deve ser nulo");
         Assertions.assertEquals("Produto Mais Vendido Fake", produtoMaisVendido.getNomeProduto());
     }
