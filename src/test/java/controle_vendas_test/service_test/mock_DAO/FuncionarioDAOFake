@@ -1,0 +1,28 @@
+package controle_vendas_test.service_test.mock_DAO;
+
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.example.controle_vendas.dao.FuncionarioDAO;
+import org.example.controle_vendas.model.Funcionario;
+
+public class FuncionarioDAOFake extends FuncionarioDAO {
+    private final Map<Integer, Funcionario> funcionarios = new HashMap<>();
+
+    public FuncionarioDAOFake() {
+        super((Connection) null);
+
+        Funcionario funcionario = new Funcionario();
+        funcionario.setFuncionarioId(1);
+        funcionario.setNome("Guilherme Vieira");
+        funcionario.setCpf("000.000.000-00");
+
+        funcionarios.put(1, funcionario);
+    }
+
+    @Override
+    public Funcionario buscarPorId(int id) {
+        return funcionarios.get(id);
+    }
+}
